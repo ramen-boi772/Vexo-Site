@@ -17,7 +17,7 @@
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a); /* subtle lofi gradient */
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
   }
 
   canvas#particles {
@@ -106,7 +106,6 @@
   <a href="https://pn.martinwguy.net" target="_blank">More Unblocked Games</a>
   <a href="https://ramen-boi772.github.io/launcher-le-eaglercraft/" target="_blank">Launcher Le EaglerCraft</a>
   <a href="https://ramen-boi772.github.io/windows-12/desktop.html" target="_blank">Win 12 (WEB-BASED VERSION)</a>
-  <!-- Extra links for scrolling demo -->
   <a href="#">Extra Link 1</a>
   <a href="#">Extra Link 2</a>
   <a href="#">Extra Link 3</a>
@@ -151,12 +150,11 @@ class Particle {
     this.speedX = (Math.random() - 0.5) * (Math.random() * 0.8 + 0.3);
     this.speedY = (Math.random() - 0.5) * (Math.random() * 0.8 + 0.3);
 
-    // Chill lofi colors
     const lofiColors = [
-      'rgba(255,200,150,0.2)',  // warm peach
-      'rgba(150,200,255,0.2)',  // soft sky blue
-      'rgba(200,150,255,0.2)',  // lavender
-      'rgba(255,180,200,0.2)'   // soft pink
+      'rgba(255,200,150,0.2)',
+      'rgba(150,200,255,0.2)',
+      'rgba(200,150,255,0.2)',
+      'rgba(255,180,200,0.2)'
     ];
     this.color = lofiColors[Math.floor(Math.random() * lofiColors.length)];
 
@@ -165,8 +163,6 @@ class Particle {
     this.pulseRange = Math.random() * 0.8 + 0.2;
     this.depthFactor = Math.random() * 0.2 + 0.1;
     this.scrollFactor = Math.random() * 0.1 + 0.05;
-
-    // Floating sway
     this.swayOffset = Math.random() * 1000;
   }
 
@@ -174,28 +170,23 @@ class Particle {
     this.x += this.speedX + Math.sin(Date.now() * 0.001 + this.swayOffset) * 0.5;
     this.y += this.speedY + Math.cos(Date.now() * 0.001 + this.swayOffset) * 0.5;
 
-    // Wrap around edges
     if (this.x < 0) this.x = canvas.width;
     if (this.x > canvas.width) this.x = 0;
     if (this.y < 0) this.y = canvas.height;
     if (this.y > canvas.height) this.y = 0;
 
-    // Pulse (soft)
     this.pulseAngle += this.pulseSpeed;
     this.size = this.baseSize + Math.sin(this.pulseAngle) * (this.pulseRange * 0.3);
 
-    // Parallax with mouse
     this.parallaxX = (mouseX - canvas.width / 2) * this.depthFactor;
     this.parallaxY = (mouseY - canvas.height / 2) * this.depthFactor;
-
-    // Scroll-based subtle depth
     this.scrollOffset = scrollY * this.scrollFactor;
   }
 
   draw() {
     ctx.fillStyle = this.color;
     ctx.shadowColor = this.color;
-    ctx.shadowBlur = 2; // soft shadow for lofi vibe
+    ctx.shadowBlur = 2;
     ctx.beginPath();
     ctx.arc(this.x + this.parallaxX, this.y + this.parallaxY - this.scrollOffset, this.size, 0, Math.PI * 2);
     ctx.fill();
@@ -209,9 +200,28 @@ function initParticles(count = 60) {
   }
 }
 
+function connectParticles(maxDistance = 100) {
+  for (let a = 0; a < particlesArray.length; a++) {
+    for (let b = a + 1; b < particlesArray.length; b++) {
+      const dx = (particlesArray[a].x + particlesArray[a].parallaxX) - (particlesArray[b].x + particlesArray[b].parallaxX);
+      const dy = (particlesArray[a].y + particlesArray[a].parallaxY) - (particlesArray[b].y + particlesArray[b].parallaxY);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < maxDistance) {
+        ctx.strokeStyle = `rgba(200,200,255,${1 - distance / maxDistance})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(particlesArray[a].x + particlesArray[a].parallaxX, particlesArray[a].y + particlesArray[a].parallaxY);
+        ctx.lineTo(particlesArray[b].x + particlesArray[b].parallaxX, particlesArray[b].y + particlesArray[b].parallaxY);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particlesArray.forEach(p => { p.update(); p.draw(); });
+  connectParticles();
   requestAnimationFrame(animateParticles);
 }
 
