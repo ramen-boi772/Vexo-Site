@@ -113,6 +113,7 @@
 
 <h1>Vexo SITE</h1>
 <h3>Link domain list for unblock stuff</h3>
+<h3>PANIC KEY ~</h3>
 <h3>WE DO NOT OWN ANY OF THESE WEBSITES NOR DO WE TAKE CREDIT FOR THEM.</h3>
 
   <!-- PROXY DISCLAIMER -->
@@ -295,5 +296,19 @@ document.getElementById("cloakBtn").addEventListener("click", () => {
 });
 </script>
 
+<script>
+document.addEventListener('keydown', function(event) {
+    // Check if the pressed key is '~' (tilde)
+    if (event.key === '~') {
+        // Open about:blank in a new tab
+        window.open('about:blank', '_blank');
+        
+        // OR: Redirect current page to about:blank
+        // location.replace('about:blank');
+    }
+});
+</script>
+
+  
 </body>
 </html>
