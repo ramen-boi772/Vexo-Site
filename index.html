@@ -9,6 +9,7 @@
 <style>
   body {
     <button id="cloak-btn" class="top-right-btn">Cloak Tab</button>
+    <button id="blankCloneBtn">Open Blank Clone</button>
     margin: 0;
     padding: 40px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -299,6 +300,19 @@ document.addEventListener('keydown', function(event) {
     document.body.innerHTML = '';
     location.replace('about:blank');
   }
+});
+
+  document.getElementById("blankCloneBtn").addEventListener("click", () => {
+  const newWin = window.open("about:blank");
+
+  if (!newWin) {
+    alert("Popup blocked! Allow popups for this site.");
+    return;
+  }
+
+  // Copy full page HTML into the new tab
+  newWin.document.write(document.documentElement.outerHTML);
+  newWin.document.close();
 });
 </script>
   
